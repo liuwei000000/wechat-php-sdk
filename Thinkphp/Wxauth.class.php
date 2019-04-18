@@ -1,9 +1,17 @@
 <?php
 /**
  * 微信oAuth认证示例
+ * 官方文档：http://mp.weixin.qq.com/wiki/17/c0f37d5704f0b64713d5d2c37b468d75.html
+ * UCToo示例:http://git.oschina.net/uctoo/uctoo/blob/master/Addons/Ucuser/UcuserAddon.class.php
+ *
+ * 微信oAuth认证类,适配Thinkphp框架，
+ * @命名空间版本
+ * @author uctoo (www.uctoo.com)
+ * @date 2015-5-15 14:10
  */
-include("../wechat.class.php");
-class wxauth {
+namespace Com;
+
+class Wxauth {
 	private $options;
 	public $open_id;
 	public $wxuser;
@@ -11,7 +19,6 @@ class wxauth {
 	public function __construct($options){
 		$this->options = $options;
 		$this->wxoauth();
-		session_start();
 	}
 	
 	public function wxoauth(){
@@ -28,12 +35,14 @@ class wxauth {
 		}
 		else
 		{
+
 			$options = array(
 					'token'=>$this->options["token"], //填写你设定的key
+                    'encodingaeskey'=>$this->options["encodingaeskey"], //填写加密用的EncodingAESKey
 					'appid'=>$this->options["appid"], //填写高级调用功能的app id
 					'appsecret'=>$this->options["appsecret"] //填写高级调用功能的密钥
 			);
-			$we_obj = new Wechat($options);
+			$we_obj = new TPWechat($options);
 			if ($code) {
 				$json = $we_obj->getOauthAccessToken();
 				if (!$json) {
@@ -86,14 +95,14 @@ class wxauth {
 				die('获取用户授权失败');
 			}
 			$oauth_url = $we_obj->getOauthRedirect($url,"wxbase",$scope);
-			header('Location: ' . $oauth_url);
+			redirect ( $oauth_url );
 		}
 	}
 }
-$options = array(
-		'token'=>'tokenaccesskey', //填写你设定的key
-		'appid'=>'wxdk1234567890', //填写高级调用功能的app id, 请在微信开发模式后台查询
-		'appsecret'=>'xxxxxxxxxxxxxxxxxxx', //填写高级调用功能的密钥
-);
-$auth = new wxauth($options);
-var_dump($auth->wxuser);
+//$options = array(
+//		'token'=>'uctoo', //填写你设定的key
+//		'appid'=>'wxdk1234567890', //填写高级调用功能的app id, 请在微信开发模式后台查询
+//		'appsecret'=>'xxxxxxxxxxxxxxxxxxx', //填写高级调用功能的密钥
+//);
+//$auth = new Wxauth($options);
+//var_dump($auth->wxuser);

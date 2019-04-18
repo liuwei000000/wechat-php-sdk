@@ -14,16 +14,13 @@
 - 用户信息（查询用户基本信息、获取关注者列表） **（认证权限）**
 - 多客服功能（客服管理、获取客服记录、客服会话管理） **（认证权限）**
 - 媒体文件（上传、获取） **（认证权限）**
-- 调用地址组件 **（支付权限）**
-- 生成订单签名数据 **（支付权限）**
-- 订单成功回调 **（支付权限）**
-- 发货通知 **（支付权限）**
-- 支付订单查询 **（支付权限）**
 - 高级群发 **（认证权限）**
 - 模板消息（设置所属行业、添加模板、发送模板消息） **（服务号、认证权限）**
 - 卡券管理（创建、修改、删除、发放、门店管理等） **（认证权限）**
 - 语义理解 **（服务号、认证权限）**
 - 获取微信服务器IP列表 **（初级权限）**  
+- 微信JSAPI授权(获取ticket、获取签名) **（初级权限）**  
+- 数据统计(用户、图文、消息、接口分析数据) **（认证权限）**  
 > 备注：  
 > 初级权限：基本权限，任何正常的公众号都有此权限  
 > 菜单权限：正常的服务号、认证后的订阅号拥有此权限  
@@ -37,10 +34,7 @@
 	'token'=>'tokenaccesskey', //填写你设定的key
 	'encodingaeskey'=>'encodingaeskey', //填写加密用的EncodingAESKey
 	'appid'=>'wxdk1234567890', //填写高级调用功能的app id, 请在微信开发模式后台查询
-	'appsecret'=>'xxxxxxxxxxxxxxxxxxx', //填写高级调用功能的密钥
-	'partnerid'=>'88888888', //财付通商户身份标识，支付权限专用，没有可不填
-	'partnerkey'=>'', //财付通商户权限密钥Key，支付权限专用
-	'paysignkey'=>'' //商户签名密钥Key，支付权限专用
+	'appsecret'=>'xxxxxxxxxxxxxxxxxxx' //填写高级调用功能的密钥
 	);
  $weObj = new Wechat($options); //创建实例对象
  //TODO：调用$weObj各实例方法
@@ -55,7 +49,7 @@
 * getRevTo()  返回消息接收者的id（即公众号id）
 * getRevType() 返回接收消息的类型
 * getRevID() 返回消息id
-* getRevCtime() 返回消息发送事件
+* getRevCtime() 返回消息发送时间
 * getRevContent() 返回消息内容正文或语音识别结果（文本型）
 * getRevPic() 返回图片信息（图片型信息） 返回数组{'mediaid'=>'','picurl'=>''}
 * getRevLink() 接收消息链接（链接型信息） 返回数组{'url'=>'','title'=>'','description'=>''}
@@ -93,47 +87,58 @@
 ### 预定义常量列表：
 ```php
 ////消息类型，使用实例调用getRevType()方法取得
-	const MSGTYPE_TEXT = 'text';
-	const MSGTYPE_IMAGE = 'image';
-	const MSGTYPE_LOCATION = 'location';
-	const MSGTYPE_LINK = 'link';
-	const MSGTYPE_EVENT = 'event';
-	const MSGTYPE_MUSIC = 'music';
-	const MSGTYPE_NEWS = 'news';
-	const MSGTYPE_VOICE = 'voice';
-	const MSGTYPE_VIDEO = 'video';
+const MSGTYPE_TEXT = 'text';
+const MSGTYPE_IMAGE = 'image';
+const MSGTYPE_LOCATION = 'location';
+const MSGTYPE_LINK = 'link';
+const MSGTYPE_EVENT = 'event';
+const MSGTYPE_MUSIC = 'music';
+const MSGTYPE_NEWS = 'news';
+const MSGTYPE_VOICE = 'voice';
+const MSGTYPE_VIDEO = 'video';
 ////事件类型，使用实例调用getRevEvent()方法取得
-	const EVENT_SUBSCRIBE = 'subscribe';       //订阅
-	const EVENT_UNSUBSCRIBE = 'unsubscribe';   //取消订阅
-	const EVENT_SCAN = 'SCAN';                 //扫描带参数二维码
-	const EVENT_LOCATION = 'LOCATION';         //上报地理位置
-	const EVENT_MENU_VIEW = 'VIEW';                     //菜单 - 点击菜单跳转链接
-	const EVENT_MENU_CLICK = 'CLICK';                   //菜单 - 点击菜单拉取消息
-	const EVENT_MENU_SCAN_PUSH = 'scancode_push';       //菜单 - 扫码推事件(客户端跳URL)
-	const EVENT_MENU_SCAN_WAITMSG = 'scancode_waitmsg'; //菜单 - 扫码推事件(客户端不跳URL)
-	const EVENT_MENU_PIC_SYS = 'pic_sysphoto';          //菜单 - 弹出系统拍照发图
-	const EVENT_MENU_PIC_PHOTO = 'pic_photo_or_album';  //菜单 - 弹出拍照或者相册发图
-	const EVENT_MENU_PIC_WEIXIN = 'pic_weixin';         //菜单 - 弹出微信相册发图器
-	const EVENT_MENU_LOCATION = 'location_select';      //菜单 - 弹出地理位置选择器
-	const EVENT_SEND_MASS = 'MASSSENDJOBFINISH';        //发送结果 - 高级群发完成
-	const EVENT_SEND_TEMPLATE = 'TEMPLATESENDJOBFINISH';//发送结果 - 模板消息发送结果
-	const EVENT_KF_SEESION_CREATE = 'kfcreatesession';  //多客服 - 接入会话
-	const EVENT_KF_SEESION_CLOSE = 'kfclosesession';    //多客服 - 关闭会话
-	const EVENT_KF_SEESION_SWITCH = 'kfswitchsession';  //多客服 - 转接会话
-	const EVENT_CARD_PASS = 'card_pass_check';          //卡券 - 审核通过
-	const EVENT_CARD_NOTPASS = 'card_not_pass_check';   //卡券 - 审核未通过
-	const EVENT_CARD_USER_GET = 'user_get_card';        //卡券 - 用户领取卡券
-	const EVENT_CARD_USER_DEL = 'user_del_card';        //卡券 - 用户删除卡券
+const EVENT_SUBSCRIBE = 'subscribe';       //订阅
+const EVENT_UNSUBSCRIBE = 'unsubscribe';   //取消订阅
+const EVENT_SCAN = 'SCAN';                 //扫描带参数二维码
+const EVENT_LOCATION = 'LOCATION';         //上报地理位置
+const EVENT_MENU_VIEW = 'VIEW';                     //菜单 - 点击菜单跳转链接
+const EVENT_MENU_CLICK = 'CLICK';                   //菜单 - 点击菜单拉取消息
+const EVENT_MENU_SCAN_PUSH = 'scancode_push';       //菜单 - 扫码推事件(客户端跳URL)
+const EVENT_MENU_SCAN_WAITMSG = 'scancode_waitmsg'; //菜单 - 扫码推事件(客户端不跳URL)
+const EVENT_MENU_PIC_SYS = 'pic_sysphoto';          //菜单 - 弹出系统拍照发图
+const EVENT_MENU_PIC_PHOTO = 'pic_photo_or_album';  //菜单 - 弹出拍照或者相册发图
+const EVENT_MENU_PIC_WEIXIN = 'pic_weixin';         //菜单 - 弹出微信相册发图器
+const EVENT_MENU_LOCATION = 'location_select';      //菜单 - 弹出地理位置选择器
+const EVENT_SEND_MASS = 'MASSSENDJOBFINISH';        //发送结果 - 高级群发完成
+const EVENT_SEND_TEMPLATE = 'TEMPLATESENDJOBFINISH';//发送结果 - 模板消息发送结果
+const EVENT_KF_SEESION_CREATE = 'kfcreatesession';  //多客服 - 接入会话
+const EVENT_KF_SEESION_CLOSE = 'kfclosesession';    //多客服 - 关闭会话
+const EVENT_KF_SEESION_SWITCH = 'kfswitchsession';  //多客服 - 转接会话
+const EVENT_CARD_PASS = 'card_pass_check';          //卡券 - 审核通过
+const EVENT_CARD_NOTPASS = 'card_not_pass_check';   //卡券 - 审核未通过
+const EVENT_CARD_USER_GET = 'user_get_card';        //卡券 - 用户领取卡券
+const EVENT_CARD_USER_DEL = 'user_del_card';        //卡券 - 用户删除卡券
 ```
 
 ### 主动接口方法:   
  *  checkAuth($appid,$appsecret,$token) 此处传入公众后台高级接口提供的appid和appsecret, 或者手动指定$token为access_token。函数将返回access_token操作令牌
+ *  resetAuth($appid='') 删除验证数据
+ *  resetJsTicket($appid='') 删除JSAPI授权TICKET
+ *  getJsTicket($appid='',$jsapi_ticket='') 获取JSAPI授权TICKET
+ *  getJsSign($url, $timestamp=0, $noncestr='', $appid='') 获取JsApi使用签名信息数组，可只提供url地址 
  *  createMenu($data) 创建菜单 $data菜单结构详见 **[自定义菜单创建接口](http://mp.weixin.qq.com/wiki/index.php?title=自定义菜单创建接口)**
  *  getServerIp() 获取微信服务器IP地址列表 返回数组array('127.0.0.1','127.0.0.1')
  *  getMenu() 获取菜单 
  *  deleteMenu() 删除菜单 
- *  uploadMedia($data, $type) 上传多媒体文件(注意上传大文件时可能需要先调用 set_time_limit(0) 避免超时)
- *  getMedia() 获取接收到的音频、视频媒体文件 
+ *  uploadMedia($data, $type) 上传临时素材，有效期为3天(注意上传大文件时可能需要先调用 set_time_limit(0) 避免超时)
+ *  getMedia($media_id,$is_video=false) 获取临时素材（含接收到的音频、视频媒体文件）
+ *  uploadForeverMedia($data, $type,$is_video=false,$video_info=array()) 上传永久素材，可以在公众平台官网素材管理模块中看到
+ *  uploadForeverArticles($data) 上传永久图文素材
+ *  updateForeverArticles($media_id,$data,$index=0) 修改永久图文素材(认证后的订阅号可用)
+ *  getForeverMedia($media_id,$is_video=false) 获取永久素材
+ *  delForeverMedia($media_id) 删除永久素材
+ *  getForeverList($type,$offset,$count) 获取永久素材列表(认证后的订阅号可用)
+ *  getForeverCount() 获取永久素材总数
  *  uploadMpVideo($data) 上传视频素材，当需要群发视频时，必须使用此方法得到的MediaID，否则无法显示
  *  uploadArticles($data) 上传图文消息素材
  *  sendMassMessage($data) 高级群发消息
@@ -152,6 +157,7 @@
  *  createGroup($name) 新增自定分组 
  *  updateGroup($groupid,$name) 更改分组名称 
  *  updateGroupMembers($groupid,$openid) 移动用户分组  
+ *  batchUpdateGroupMembers($groupid,$openid_list) 批量移动用户分组 
  *  sendCustomMessage($data) 发送客服消息  
  *  getOauthRedirect($callback,$state,$scope) 获取网页授权oAuth跳转地址  
  *  getOauthAccessToken() 通过回调的code获取网页授权access_token  
@@ -159,13 +165,7 @@
  *  getOauthUserinfo($access_token,$openid) 通过网页授权的access_token获取用户资料  
  *  getOauthAuth($access_token,$openid)  检验授权凭证access_token是否有效
  *  getSignature($arrdata,'sha1') 生成签名字串  
- *  generateNonceStr($length) 获取随机字串  
- *  createPackage($out_trade_no,$body,$total_fee,$notify_url,$spbill_create_ip,$fee_type=1,$bank_type="WX",$input_charset="UTF-8",$time_start="",$time_expire="",$transport_fee="",$product_fee="",$goods_tag="",$attach="") 生成订单package字符串  
- *  getPaySign($package, $timeStamp, $nonceStr) 支付签名(paySign)生成方法  
- *  checkOrderSignature($orderxml='') 回调通知签名验证  
- *  sendPayDeliverNotify($openid,$transid,$out_trade_no,$status=1,$msg='ok') 发货通知  
- *  getPayOrder($out_trade_no) 查询订单信息  
- *  getAddrSign($url, $timeStamp, $nonceStr, $user_token='') 获取收货地址JS的签名
+ *  generateNonceStr($length=16) 获取随机字串  
  *  setTMIndustry($id1,$id2='') 模板消息，设置所属行业
  *  addTemplateMessage($tpl_id) 模板消息，添加消息模板
  *  sendTemplateMessage($data) 发送模板消息
@@ -183,6 +183,30 @@
  *  deleteKFAccount($account) 删除客服账号
  *  setKFHeadImg($account,$imgfile) 上传客服头像
  *  querySemantic($uid,$query,$category,$latitude=0,$longitude=0,$city="",$region="") 语义理解接口 参数含义及返回的json内容请查看 **[微信语义理解接口](http://mp.weixin.qq.com/wiki/index.php?title=语义理解)**
+ *  getDatacube($type,$subtype,$begin_date,$end_date='') 获取统计数据 参数需注意$type与$subtype的定义
+> 获取统计数据方法 参数定义
+> 
+| 数据分类 | $type值(字符串)  | 数据子分类 | $subtype值(字符串) | 时间跨度(天) |
+| --------- | :-------:  | --------- | :------: | ----: |
+| 用户分析 | 'user' | 获取用户增减数据 | 'summary' | 7 |
+| 用户分析 | 'user' | 获取累计用户数据 | 'cumulate' | 7 |
+| 图文分析 | 'article' | 获取图文群发每日数据 | 'summary' | 1 |
+| 图文分析 | 'article' | 获取图文群发总数据 | 'total' | 1 |
+| 图文分析 | 'article' | 获取图文统计数据 | 'read' | 3 |
+| 图文分析 | 'article' | 获取图文统计分时数据 | 'readhour' | 1 |
+| 图文分析 | 'article' | 获取图文分享转发数据 | 'share' | 7 |
+| 图文分析 | 'article' | 获取图文分享转发分时数据 | 'sharehour' | 1 |
+| 消息分析 | 'upstreammsg' | 获取消息发送概况数据 | 'summary' | 7 |
+| 消息分析 | 'upstreammsg' | 获取消息分送分时数据 | 'hour' | 1 |
+| 消息分析 | 'upstreammsg' | 获取消息发送周数据 | 'week' | 30 |
+| 消息分析 | 'upstreammsg' | 获取消息发送月数据 | 'month' | 30 |
+| 消息分析 | 'upstreammsg' | 获取消息发送分布数据 | 'dist' | 15 |
+| 消息分析 | 'upstreammsg' | 获取消息发送分布周数据 | 'distweek' | 30 |
+| 消息分析 | 'upstreammsg' | 获取消息发送分布月数据 | 'distmonth' | 30 |
+| 接口分析 | 'interface' | 获取接口分析数据 | 'summary' | 30 |
+| 接口分析 | 'interface' | 获取接口分析分时数据 | 'summaryhour' | 1 |
+需要注意 `begin_date`和`end_date`的差值需小于“最大时间跨度”（比如最大时间跨度为1时，`begin_date`和`end_date`的差值只能为0，才能小于1）
+
  *  createCard($data) 创建卡券
  *  updateCard($data) 修改卡券
  *  delCard($card_id) 删除卡券
@@ -195,8 +219,8 @@
  *  decryptCardCode($encrypt_code) code 解码
  *  checkCardCode($code) 获取 code 的有效性
  *  getCardIdList($data) 批量查询卡列表
- *  updateCardCode($code,$code_id,$new_code) 更改 code
- *  unavailableCardCode($code) 设置卡券失效**(不可逆)**
+ *  updateCardCode($code,$card_id,$new_code) 更改 code
+ *  unavailableCardCode($code,$card_id='') 设置卡券失效**(不可逆)**
  *  modifyCardStock($data) 库存修改
  *  activateMemberCard($data) 激活/绑定会员卡，参数结构请参看卡券开发文档(6.1.1 激活/绑定会员卡)章节
  *  updateMemberCard($data) 会员卡交易，参数结构请参看卡券开发文档(6.1.2 会员卡交易)章节
